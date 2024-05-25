@@ -1,0 +1,7 @@
+whas500_full_exp_constant_test dataset, 10000 samples, censored: 2.92%
+
+RSF parameters: {'n_estimators': 250, 'max_depth': 16, 'min_samples_split': 10, 'max_features': 'sqrt'}
+RFC parameters: None
+RFS train censored percentages: [ 0. 10. 20. 30. 40. 50. 60. 70.]
+Results: {'rfc_auc_mean': 0.9309454175239338, 'rsf_auc_mean': array([0.92823014, 0.92587969, 0.92416737, 0.92301019, 0.92037019,
+       0.91913118, 0.91665305, 0.91386539])}

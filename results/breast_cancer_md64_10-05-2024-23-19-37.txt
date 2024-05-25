@@ -1,0 +1,7 @@
+breast_cancer_md64 dataset, 10000 samples, censored: 77.47%
+
+RSF parameters: {'n_estimators': 100, 'max_depth': 64, 'min_samples_split': 5, 'max_features': 'sqrt'}
+RFC parameters: {'max_depth': 64, 'min_samples_leaf': 5, 'n_estimators': 100}
+RFS train censored percentages: [ 0. 10. 20. 30. 40. 50. 60. 70.]
+Results: {'rfc_auc_mean': 0.982823002240478, 'rsf_auc_mean': array([0.90720687, 0.91354738, 0.93995856, 0.94656463, 0.94054383,
+       0.93750591, 0.94184661, 0.94054421])}

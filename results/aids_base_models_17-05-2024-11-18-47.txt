@@ -1,0 +1,7 @@
+aids_base_models dataset, 20000 samples, censored: 73.34%
+
+RSF parameters: None
+RFC parameters: None
+RFS train censored percentages: [ 0. 10. 20. 30. 40. 50. 60. 70. 80.]
+Results: {'rfc_auc_mean': 0.8918007411282278, 'rsf_auc_mean': array([0.89158357, 0.88840033, 0.88573123, 0.88250982, 0.88129188,
+       0.87974706, 0.8761558 , 0.87482825, 0.87226953])}

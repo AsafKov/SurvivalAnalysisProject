@@ -1,0 +1,7 @@
+breast_cancer_full_exp dataset, 10000 samples, censored: 70.57%
+
+RSF parameters: {'n_estimators': 500, 'max_depth': 16, 'min_samples_split': 50, 'max_features': 0.1}
+RFC parameters: None
+RFS train censored percentages: [ 0. 10. 20. 30. 40. 50. 60. 70.]
+Results: {'rfc_auc_mean': 0.9363013808994378, 'rsf_auc_mean': array([0.90311198, 0.91067222, 0.9123418 , 0.91135985, 0.90950406,
+       0.90733296, 0.90343599, 0.89841124])}

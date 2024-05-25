@@ -1,0 +1,7 @@
+aids_full_exp dataset, 20000 samples, censored: 73.34%
+
+RSF parameters: {'n_estimators': 100, 'max_depth': None, 'min_samples_split': 10, 'max_features': 'sqrt'}
+RFC parameters: None
+RFS train censored percentages: [ 0. 10. 20. 30. 40. 50. 60. 70. 80.]
+Results: {'rfc_auc_mean': 0.8916823509944379, 'rsf_auc_mean': array([0.89479456, 0.88332485, 0.88388462, 0.88533851, 0.88729031,
+       0.88332018, 0.87652256, 0.87848384, 0.87155355])}

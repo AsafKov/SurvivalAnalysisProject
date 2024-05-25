@@ -1,0 +1,7 @@
+aids_full_exp_constant_test dataset, 20000 samples, censored: 73.34%
+
+RSF parameters: {'n_estimators': 500, 'max_depth': 16, 'min_samples_split': 10, 'max_features': 'log2'}
+RFC parameters: None
+RFS train censored percentages: [ 0. 10. 20. 30. 40. 50. 60. 70. 80.]
+Results: {'rfc_auc_mean': 0.8916735465381791, 'rsf_auc_mean': array([0.89301927, 0.89050458, 0.88703887, 0.88491815, 0.88336385,
+       0.88142516, 0.87995244, 0.87702244, 0.87617148])}
