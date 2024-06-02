@@ -34,15 +34,15 @@ def censored_percentage(syn_df: DataFrame, time: int):
 
 
 # returns the earliest timeframe with above 80% censoring (or as close as possible)
-def determine_censor_time(df: DataFrame):
+def determine_censor_time(df: DataFrame, target=70):
     time = 0
     top_percent = 0
-    for i in np.arange(df['time'].min(), df['time'].max(), df['time'].max() / 20):
+    for i in range(df['time'].min(), df['time'].max()):
         censored = censored_percentage(df, i)
         if censored > top_percent:
             top_percent = censored
             time = i
-        if top_percent >= 80:
+        if top_percent >= 70:
             break
     return time, top_percent
 

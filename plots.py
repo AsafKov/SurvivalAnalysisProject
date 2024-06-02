@@ -28,3 +28,20 @@ def censored_by_time_plot(df):
     plt.title(f"censored samples percentage by time")
     plt.grid(True)
     plt.show()
+
+# plot a line plot of censored percentage by time of dataframe
+def censored_samples_by_time(df, time, dataset):
+    X = []
+    y = []
+    samples = 0
+    for t in np.sort(df['time'].unique()):
+        X.append(t)
+        samples += df[(df['time'] < time) & (df['censor'] == False) & (df['time'] == t)].shape[0]
+        y.append(samples)
+    fig = plt.figure(figsize=(20, 6))
+    plt.plot(X, y)
+    plt.xlabel('time')
+    plt.ylabel('samples')
+    plt.title(f"{dataset} dataset samples by time (censore time={time})")
+    plt.grid(True)
+    plt.show()
