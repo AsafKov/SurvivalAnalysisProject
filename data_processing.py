@@ -1,5 +1,5 @@
 from typing import Any
-from sksurv.datasets import load_whas500, load_gbsg2, load_aids
+from sksurv.datasets import load_whas500, load_gbsg2, load_aids, load_flchain
 import pandas as pd
 import numpy as np
 from pandas import DataFrame
@@ -37,12 +37,12 @@ def censored_percentage(syn_df: DataFrame, time: int):
 def determine_censor_time(df: DataFrame, target=70):
     time = 0
     top_percent = 0
-    for i in range(df['time'].min(), df['time'].max()):
+    for i in range(int(df['time'].min()), int(df['time'].max())):
         censored = censored_percentage(df, i)
         if censored > top_percent:
             top_percent = censored
             time = i
-        if top_percent >= 70:
+        if top_percent >= target:
             break
     return time, top_percent
 
@@ -73,11 +73,15 @@ def split_c_uc(df, time):
 
 
 # returns a dict of all the datasets required for an experiment, by a given timeframe
-def create_datasets(df, time: int):
+def create_datasets(df, time: int, relative_test_size=True):
     df_censored, df_uncensored = split_c_uc(df, time)
     X = df_uncensored.drop(labels=['censor', 'time'], axis=1)
     y = df_uncensored[['censor', 'time']]
-    X_train_uc, X_test_uc, y_train_uc, y_test_uc = train_test_split(X, y, test_size=0.55, train_size=0.45, random_state=42)
+    if relative_test_size:
+        test_size = 0.55
+    else:
+        test_size = int(0.2*df_uncensored.shape[0])
+    X_train_uc, X_test_uc, y_train_uc, y_test_uc = train_test_split(X, y, test_size=test_size, random_state=42)
 
     X_train_c = df_censored.drop(labels=['censor', 'time'], axis=1)
     y_train_c = df_censored[['censor', 'time']]
@@ -130,12 +134,15 @@ def load_prepare_whas500_dataset():
     return orig_data
 
 
-def load_prepare_aids_dataset():
-    X, y = load_aids('aids')
+def load_prepare_aids_dataset(event='aids'):
+    X, y = load_aids(event)
     orig_data = pd.merge(pd.DataFrame(X), pd.DataFrame(y), left_index=True, right_index=True, how='outer')
     orig_data.dropna(inplace=True)
 
-    orig_data.rename(columns={'fstat': 'censor', 'lenfol': 'time'}, inplace=True)
+    if event=='aids':
+        orig_data.rename(columns={'fstat': 'censor', 'lenfol': 'time'}, inplace=True)
+    else:
+        orig_data.rename(columns={'censor_d': 'censor', 'time_d': 'time'}, inplace=True)
     orig_data['age'] = orig_data['age'].astype(int)
     orig_data['time'] = orig_data['time'].astype(int)
     orig_data['priorzdv'] = orig_data['priorzdv'].astype(int)
@@ -152,4 +159,18 @@ def load_prepare_breast_cancer_rna_dataset():
     orig_data['time'] = orig_data['time'].astype(float)
     orig_data = orig_data[orig_data['time'] > 0]
 
+    return orig_data
+
+def load_prepare_flchain_dataset():
+    X, y = load_flchain()
+    orig_data = pd.merge(pd.DataFrame(X), pd.DataFrame(y), left_index=True, right_index=True, how='outer')
+
+    orig_data.rename(columns={'death': 'censor', 'futime': 'time'}, inplace=True)
+    orig_data['mgus'].replace({'no': 0, 'yes': 1}, inplace=True)
+    orig_data['mgus'] = orig_data['mgus'].astype('category')
+    orig_data['sex'].replace({'M': 0, 'F': 1}, inplace=True)
+    orig_data['sex'] = orig_data['sex'].astype('category')
+    orig_data.drop(columns=['sample.yr', 'chapter'], inplace=True)
+    orig_data = orig_data[orig_data['time'] > 0]
+    orig_data.dropna(inplace=True)
     return orig_data

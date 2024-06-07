@@ -5,7 +5,6 @@ from sksurv.metrics import cumulative_dynamic_auc
 from sklearn.metrics import roc_auc_score
 from sklearn.model_selection import train_test_split, GridSearchCV, KFold
 import time
-
 import data_processing
 
 
@@ -20,17 +19,44 @@ def rsf_score(X_train, y_train, X_test, y_test, censor_time, rsf_params):
     hazard_funcs_arr = rsf.predict(X_test)
     auc, _ = cumulative_dynamic_auc(survival_train=y_train, survival_test=y_test, estimate=hazard_funcs_arr,
                                     times=[censor_time])
-    hazard_funcs_arr = rsf.predict(X_train)
-    auc_t, _ = cumulative_dynamic_auc(survival_train=y_train, survival_test=y_train, estimate=hazard_funcs_arr,
+    return auc
+
+
+def survival_model_fit(X_train, y_train, model_class, params):
+    model = model_class()
+    if params != None:
+        model.set_params(**params)
+    y_train = y_structured_array(y_train)
+    return model.fit(X_train, y_train)
+
+
+def survival_model_score(model, X_test, y_test, y_train, censor_time):
+    y_train = y_structured_array(y_train)
+    y_test = y_structured_array(y_test)
+    hazard_funcs_arr = model.predict(X_test)
+    auc, _ = cumulative_dynamic_auc(survival_train=y_train, survival_test=y_test, estimate=hazard_funcs_arr,
                                     times=[censor_time])
     return auc
 
 
+def sklearn_model_fit(X_train, y_train, model_class, params):
+    model = model_class()
+    if params != None:
+        model.set_params(**params)
+    return model.fit(X_train, y_train)
+
+
+def sklearn_model_score(model, X_test, y_test):
+    y_pred_prob = model.predict_proba(X_test)[:, 1]
+    auc = roc_auc_score(y_test, y_pred_prob)
+    return auc
+
+
 # train and test RF model, output for a specific time (AUC)
-def rfc_score(X_train, y_train, X_test, y_test, rfc_params):
+def rf_score(X_train, y_train, X_test, y_test, rf_params):
     rf = RandomForestClassifier(n_jobs=-1)
-    if rfc_params != None:
-        rf.set_params(**rfc_params)
+    if rf_params != None:
+        rf.set_params(**rf_params)
     rf.fit(X_train, y_train)
     y_pred_prob = rf.predict_proba(X_test)[:, 1]
     auc = roc_auc_score(y_test, y_pred_prob)
@@ -88,7 +114,7 @@ def model_tuning_rsf(df, censor_time, params, verbose=1):
                     if verbose >= 2:
                         iter_report += f", total time: {int(time.time()-start)}s, {int((time.time()-start)/i)}s/iter"
                     if verbose >= 3:
-                        iter_report += f", score: {np.asarray(comb_scores).mean()}, params: {params_comb}"
+                        iter_report += f", score: {best_auc}, params: {best_params}"
                     print(iter_report)
     return best_params, best_auc
 

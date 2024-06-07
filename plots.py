@@ -12,6 +12,7 @@ def line_plot(mean_rsf_aucs, mean_rfc_auc, censored_percentage, num_experiments,
     plt.ylabel('AUC')
     plt.title(f"mean AUC scores across {num_experiments} experiments - {title}")
     plt.grid(True)
+    plt.rcParams["figure.facecolor"] = "w"
     plt.show()
 
 

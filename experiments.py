@@ -1,30 +1,33 @@
 import numpy as np
 from pandas import DataFrame
 from datetime import date, datetime
-from tqdm import tqdm
 import data_processing
 import models
 
 
-def rsf_rfc(df: DataFrame, censor_vals: list, time, rsf_params=None, rfc_params=None):
-    datasets = data_processing.create_datasets(df, time)
-    uncensored_train = datasets['uncensored']['X_train'].shape[0]
-    test_size = datasets['test']['X'].shape[0]
-    rsf_aucs = []
-    rfc_aucs = []
-    for i in tqdm(censor_vals):
-        rfc_aucs.append(models.rfc_score(datasets['uncensored']['X_train'], datasets['uncensored']['y_train'],
-                                   datasets['test']['X'], datasets['uncensored']['y_test'], rfc_params))
+def run_experiment(df: DataFrame, censor_vals: list, censor_time, exp_models, models_params, test_size_relative=True, debug=False):
+    surv_model, sk_model = exp_models
+    surv_params, sk_params = models_params
+    datasets = data_processing.create_datasets(df, censor_time, test_size_relative)
+    survival_model_aucs = []
+    sklearn_avg_aug = 0
+    if debug:
+        uncensored_train_size = datasets['uncensored']['X_train'].shape[0]
+        test_size = datasets['test']['X'].shape[0]
+        print(f'uncensored train size: {uncensored_train_size}, test size: {test_size}')
 
+    for i in censor_vals:
+        model = models.sklearn_model_fit(datasets['uncensored']['X_train'], datasets['uncensored']['y_train'], sk_model, sk_params)
+        sklearn_avg_aug += models.sklearn_model_score(model, datasets['test']['X'], datasets['uncensored']['y_test'])
         X_train, y_train = data_processing.use_censored_samples(datasets['censored']['X_train'],
-                                                                datasets['censored']['y_train'], i, time)
-        # Make sure the test size is 20% of the total dataset when considering the ratio of censoring
-        test_X_modified = datasets['test']['X']#[:int(min(datasets['test']['X'].shape[0], X_train.shape[0]*0.2*1.2))]
-        test_y_modified = datasets['test']['y']#[:int(min(datasets['test']['X'].shape[0], X_train.shape[0]*0.2*1.2))]
-        auc_rsf = (models.rsf_score(X_train, y_train, test_X_modified, test_y_modified, time, rsf_params)
-                   .item())
-        rsf_aucs.append(auc_rsf)
-    return np.asarray(rfc_aucs).mean(), rsf_aucs, datasets
+                                                                datasets['censored']['y_train'], i, censor_time)
+        if debug:
+            train_size = X_train.shape[0]
+            print(f'censored train size ({i*100}% censoring): {train_size}')
+        model = models.survival_model_fit(X_train, y_train, surv_model, surv_params)
+        auc_rsf = models.survival_model_score(model,  datasets['test']['X'], datasets['test']['y'], y_train, censor_time).item()
+        survival_model_aucs.append(auc_rsf)
+    return sklearn_avg_aug/len(censor_vals), survival_model_aucs, datasets
 
 
 # saves the experiment and its results in a text file in the results folder
