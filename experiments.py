@@ -31,7 +31,7 @@ def run_experiment(df: DataFrame, censor_vals: list, censor_time, exp_models, mo
 
 
 # saves the experiment and its results in a text file in the results folder
-def exp_report(df_size, name, censor_vals, datasets, time, rsf_params, rfc_params, results):
+def exp_report(df_size, name, censor_vals, datasets, time, models_type, surv_params, sk_params, results):
     today = date.today()
     time_in_day = datetime.now()
     test_size = datasets['test']['X'].shape[0]
@@ -45,12 +45,13 @@ def exp_report(df_size, name, censor_vals, datasets, time, rsf_params, rfc_param
     file = open(f"results/{name}_{today.strftime('%d-%m-%Y')}-{time_in_day.strftime('%H-%M-%S')}.txt", 'a')
     file.write(f"{name} dataset, {df_size} samples, censored: "
                f"{censor_vals[-1]*100:.2f}%\n\n")
-    file.write(f"RFS train censored percentages: {np.asarray(censor_vals)*100}\n")
-    file.write(f'features: {n_features}\n')
-    file.write(f'test size: {test_size}\n')
-    file.write(f'uncensored train size: {uncensored_train_sizes}\n')
-    file.write(f'censored train size: {censored_train_sizes}\n')
-    file.write(f"RSF parameters: {rsf_params}\n")
-    file.write(f"RFC parameters: {rfc_params}\n")
+    file.write(f'Models: {models_type}\n')
+    file.write(f"Censored percentages: {np.asarray(censor_vals)*100}\n")
+    file.write(f'Features: {n_features}\n')
+    file.write(f'Test size: {test_size}\n')
+    file.write(f'Uncensored train size: {uncensored_train_sizes}\n')
+    file.write(f'Censored train size: {censored_train_sizes}\n')
+    file.write(f"Sksurv model parameters: {surv_params}\n")
+    file.write(f"Sklearn model parameters: {sk_params}\n")
     file.write(f"Results: {results}")
     file.close()
