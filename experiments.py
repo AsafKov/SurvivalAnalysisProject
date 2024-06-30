@@ -12,6 +12,7 @@ def run_experiment(df: DataFrame, censor_vals: list, censor_time, exp_models, mo
     survival_model_aucs = []
     sklearn_avg_aug = 0
     if debug:
+        print(f'censoring: {censor_vals[-1]}')
         uncensored_train_size = datasets['uncensored']['X_train'].shape[0]
         test_size = datasets['test']['X'].shape[0]
         print(f'uncensored train size: {uncensored_train_size}, test size: {test_size}')
@@ -46,7 +47,7 @@ def exp_report(df_size, name, censor_vals, datasets, time, models_type, surv_par
     file.write(f"{name} dataset, {df_size} samples, censored: "
                f"{censor_vals[-1]*100:.2f}%\n\n")
     file.write(f'Models: {models_type}\n')
-    file.write(f"Censored percentages: {np.asarray(censor_vals)*100}\n")
+    file.write(f"Censored percentages: {(np.asarray(censor_vals)*100).tolist()}\n")
     file.write(f'Features: {n_features}\n')
     file.write(f'Test size: {test_size}\n')
     file.write(f'Uncensored train size: {uncensored_train_sizes}\n')

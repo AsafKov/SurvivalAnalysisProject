@@ -4,9 +4,15 @@ import numpy as np
 
 
 # plot a line plot of aucs by censored percentage used in training
-def line_plot(mean_rsf_aucs, mean_rfc_auc, censored_percentage, num_experiments, title):
-    plt.plot(censored_percentage, mean_rsf_aucs, label='rfs auc')
-    plt.scatter(0, mean_rfc_auc, color='red', label='rfc auc')
+def line_plot(mean_rsf_aucs, mean_rfc_auc, censored_percentage, num_experiments, title, models_type):
+    if models_type == 'Forest':
+        surv_model = 'rsf'
+        sk_model = 'rf'
+    else:
+        surv_model = 'cox regression'
+        sk_model = 'logistic regression'
+    plt.plot(censored_percentage, mean_rsf_aucs, label=surv_model)
+    plt.scatter(0, mean_rfc_auc, color='red', label=sk_model)
     plt.legend()
     plt.xlabel('Censored Percentage')
     plt.ylabel('AUC')

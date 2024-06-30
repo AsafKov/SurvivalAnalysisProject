@@ -37,7 +37,7 @@ def censored_percentage(syn_df: DataFrame, time: int):
 def determine_censor_time(df: DataFrame, target=70):
     time = 0
     top_percent = 0
-    for i in range(int(df['time'].min()), int(df['time'].max())):
+    for i in range(int(df['time'].min()), int(df['time'].max()+1)):
         censored = censored_percentage(df, i)
         if censored > top_percent:
             top_percent = censored
