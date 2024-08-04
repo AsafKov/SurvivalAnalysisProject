@@ -167,9 +167,11 @@ def load_prepare_flchain_dataset():
 
     orig_data.rename(columns={'death': 'censor', 'futime': 'time'}, inplace=True)
     orig_data['mgus'].replace({'no': 0, 'yes': 1}, inplace=True)
-    orig_data['mgus'] = orig_data['mgus'].astype('category')
+    orig_data['mgus'] = orig_data['mgus'].astype('int')
+    orig_data['age'] = orig_data['age'].astype('int')
     orig_data['sex'].replace({'M': 0, 'F': 1}, inplace=True)
-    orig_data['sex'] = orig_data['sex'].astype('category')
+    orig_data['sex'] = orig_data['sex'].astype('int')
+    orig_data['flc.grp'] = orig_data['flc.grp'].astype('int')
     orig_data.drop(columns=['sample.yr', 'chapter'], inplace=True)
     orig_data = orig_data[orig_data['time'] > 0]
     orig_data.dropna(inplace=True)
