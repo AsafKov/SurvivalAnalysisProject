@@ -23,7 +23,7 @@ def line_plot(mean_rsf_aucs, mean_rfc_auc, censored_percentage, num_experiments,
 
 
 # plot a line plot of censored percentage by time of dataframe
-def censored_by_time_plot(df):
+def censored_by_time_plot(df, dataset_name):
     X = []
     y = []
     for t in np.arange(df['time'].min(), df['time'].max(), int((df['time'].max()-df['time'].min()))/100):
@@ -32,7 +32,7 @@ def censored_by_time_plot(df):
     plt.plot(X, y)
     plt.xlabel('time')
     plt.ylabel('percentage')
-    plt.title(f"censored samples percentage by time")
+    plt.title(f"{dataset_name}: censored samples percentage by time")
     plt.grid(True)
     plt.show()
 
@@ -45,10 +45,10 @@ def censored_samples_by_time(df, time, dataset):
         X.append(t)
         samples += df[(df['time'] < time) & (df['censor'] == False) & (df['time'] == t)].shape[0]
         y.append(samples)
-    fig = plt.figure(figsize=(20, 6))
+    fig = plt.figure(figsize=(6, 4))
     plt.plot(X, y)
     plt.xlabel('time')
     plt.ylabel('samples')
-    plt.title(f"{dataset} dataset samples by time (censore time={time})")
+    plt.title(f"{dataset} censored samples by time (pivot={time})")
     plt.grid(True)
     plt.show()
